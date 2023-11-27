@@ -1,4 +1,4 @@
-module github.com/bitrise-steplib/steps-restore-carthage-cache
+module github.com/bitrise-steplib/bitrise-step-restore-carthage-cache/step
 
 go 1.17
 
