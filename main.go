@@ -1,13 +1,15 @@
 package main
 
 import (
-	"github.com/bitrise-steplib/bitrise-step-restore-carthage-cache/step"
 	"os"
+
+	"github.com/bitrise-steplib/bitrise-step-restore-carthage-cache/step"
 
 	"github.com/bitrise-io/go-steputils/v2/stepconf"
 	"github.com/bitrise-io/go-utils/v2/command"
 	"github.com/bitrise-io/go-utils/v2/env"
-	. "github.com/bitrise-io/go-utils/v2/exitcode"
+	"github.com/bitrise-io/go-utils/v2/errorutil"
+	"github.com/bitrise-io/go-utils/v2/exitcode"
 	"github.com/bitrise-io/go-utils/v2/log"
 )
 
@@ -16,7 +18,7 @@ func main() {
 	os.Exit(int(exitCode))
 }
 
-func run() ExitCode {
+func run() exitcode.ExitCode {
 	logger := log.NewLogger()
 	envRepo := env.NewRepository()
 	inputParser := stepconf.NewInputParser(envRepo)
@@ -24,9 +26,9 @@ func run() ExitCode {
 	cacheStep := step.New(logger, inputParser, envRepo, cmdFactory)
 
 	if err := cacheStep.Run(); err != nil {
-		logger.Errorf(err.Error())
-		return Failure
+		logger.Errorf("%s", errorutil.FormattedError(err))
+		return exitcode.Failure
 	}
 
-	return Success
+	return exitcode.Success
 }
