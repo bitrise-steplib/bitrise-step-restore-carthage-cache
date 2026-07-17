@@ -22,7 +22,8 @@ workflows:
         run_if: "true"
         is_skippable: false
         inputs:
-        - key: '{{ .Arch }}-carthage-cache-{{ checksum "**/Cartfile.resolved" }}'
+        - key: |-
+            {{ .Arch }}-carthage-cache-{{ checksum "**/Cartfile.resolved" }}
         - paths: |-
             **/Carthage/Build
             **/Carthage/Cachefile
