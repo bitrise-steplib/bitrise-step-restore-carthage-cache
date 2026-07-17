@@ -22,8 +22,7 @@ workflows:
         run_if: "true"
         is_skippable: false
         inputs:
-        - key: |-
-            {{ getenv "BITRISEIO_STACK_ID" }}-carthage-cache-{{ checksum "**/Cartfile.resolved" }}-{{ checksum "**/Carthage/Cachefile" }}
+        - key: '{{ .Arch }}-carthage-cache-{{ checksum "**/Cartfile.resolved" }}'
         - paths: |-
             **/Carthage/Build
             **/Carthage/Cachefile
@@ -40,8 +39,6 @@ workflows:
         is_skippable: false
         inputs:
         - verbose: "true"
-        - key: |-
-            {{ getenv "BITRISEIO_STACK_ID" }}-carthage-cache-{{ checksum "**/Cartfile.resolved" }}-{{ checksum "**/Carthage/Cachefile" }}
     - script:
         title: Check restored cache
         inputs:
