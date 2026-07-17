@@ -2,6 +2,8 @@ format_version: "11"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
 workflows:
+  # The test sample's Alamofire dependency does not compile on the Xcode-27 beta
+  # stack, so the Carthage-dependent steps are skipped on osx-xcode-edge.
   test_carthage:
     envs:
     - TEST_APP_URL: https://github.com/bitrise-io/Bitrise-iOS-Carthage-Sample.git
@@ -14,34 +16,37 @@ workflows:
         inputs:
         - path: ./_tmp
     - carthage:
+        run_if: "{{ not (enveq \"BITRISEIO_STACK_ID\" \"osx-xcode-edge\") }}"
         inputs:
         - carthage_command: bootstrap
         - carthage_options: --use-xcframeworks --platform iOS
         - verbose_log: "yes"
     - git::git@github.com:bitrise-steplib/bitrise-step-save-cache.git:
-        run_if: "true"
+        run_if: "{{ not (enveq \"BITRISEIO_STACK_ID\" \"osx-xcode-edge\") }}"
         is_skippable: false
         inputs:
         - key: |-
-            {{ .Arch }}-carthage-cache-{{ checksum "**/Cartfile.resolved" }}-{{ checksum "**/Carthage/Cachefile" }}
+            {{ .Arch }}-carthage-cache-{{ checksum "**/Cartfile.resolved" }}
         - paths: |-
             **/Carthage/Build
             **/Carthage/Cachefile
         - verbose: "true"
     - script:
         title: Remove Carthage folder
+        run_if: "{{ not (enveq \"BITRISEIO_STACK_ID\" \"osx-xcode-edge\") }}"
         inputs:
         - content: |-
             set -ex
             rm -rf Carthage
     - path::./:
         title: Execute step
-        run_if: "true"
+        run_if: "{{ not (enveq \"BITRISEIO_STACK_ID\" \"osx-xcode-edge\") }}"
         is_skippable: false
         inputs:
         - verbose: "true"
     - script:
         title: Check restored cache
+        run_if: "{{ not (enveq \"BITRISEIO_STACK_ID\" \"osx-xcode-edge\") }}"
         inputs:
         - content: |
             set -ex
@@ -53,6 +58,7 @@ workflows:
             fi
     - carthage:
         title: Carthage bootstrap again
+        run_if: "{{ not (enveq \"BITRISEIO_STACK_ID\" \"osx-xcode-edge\") }}"
         inputs:
         - carthage_command: bootstrap
         - carthage_options: --use-xcframeworks --platform iOS
